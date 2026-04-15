@@ -1,0 +1,50 @@
+{
+  "eval": {
+    "model": "haiku",
+    "scaffold": "calibrated-scoring"
+  },
+  "research": {
+    "model": "sonnet",
+    "scaffold": "insight-first"
+  },
+  "content": {
+    "model": "haiku",
+    "scaffold": "insight-first"
+  },
+  "analytical_review": {
+    "model": "haiku",
+    "scaffold": "substance-check"
+  },
+  "search": {
+    "model": "haiku",
+    "scaffold": "plan-first"
+  },
+  "coding_review": {
+    "model": "sonnet",
+    "scaffold": null
+  },
+  "coding_design": {
+    "model": "sonnet",
+    "scaffold": null
+  },
+  "coding_debug": {
+    "model": "sonnet",
+    "scaffold": null
+  },
+  "operational": {
+    "model": "sonnet",
+    "scaffold": null
+  },
+  "status_check": {
+    "model": "haiku",
+    "scaffold": null
+  },
+  "conversation": {
+    "model": "opus",
+    "scaffold": null
+  },
+  "safety_critical": {
+    "model": "opus",
+    "scaffold": null
+  }
+}

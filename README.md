@@ -23,17 +23,17 @@ The routing table avoids these entirely: no scaffolds on operational, coding, sa
 
 ## Install
 
-Requires: Python 3, `requests`, `numpy`, and [Ollama](https://ollama.com) running locally with nomic-embed-text.
+Requires: Python 3.10+, `requests`, `numpy`, and [Ollama](https://ollama.com) running locally with nomic-embed-text.
 
 ```bash
+pip install claude-router
 ollama pull nomic-embed-text
-cp -r router.py data/ scaffolds.json /your/project/
 ```
 
 ## Quick start
 
 ```python
-from router import ClaudeRouter
+from claude_router import ClaudeRouter
 
 router = ClaudeRouter()
 result = router.route("Evaluate this research paper for methodological rigor")
@@ -127,6 +127,17 @@ router = ClaudeRouter(
 Benchmarks: [benchmarks/](benchmarks/) | Raw citations: [scaffolds.json](scaffolds.json) | License: [MIT](LICENSE)
 
 Key experiments: 4-condition code/research crossover, scaffolds-vs-operational stress test, scaffolded Sonnet beats Opus 75% on research (6/8 blind wins, 140 API calls).
+
+## Hermes Labs Ecosystem
+
+claude-router is part of the [Hermes Labs](https://hermes-labs.ai) open-source suite:
+
+- [**lintlang**](https://github.com/roli-lpci/lintlang) — Static linter for AI agent tool descriptions and system prompts
+- [**little-canary**](https://github.com/roli-lpci/little-canary) — Prompt injection detection
+- [**zer0dex**](https://github.com/roli-lpci/zer0dex) — Dual-layer memory for AI agents
+- [**zer0lint**](https://github.com/roli-lpci/zer0lint) — mem0 extraction diagnostics
+- [**suy-sideguy**](https://github.com/roli-lpci/suy-sideguy) — Autonomous agent watchdog
+- [**quickthink**](https://github.com/roli-lpci/quickthink) — Planning scaffolding for local LLMs
 
 ---
 
