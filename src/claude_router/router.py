@@ -211,7 +211,8 @@ class ClaudeRouter:
         return text
 
 
-if __name__ == "__main__":
+def _cli():
+    """CLI entry point for claude-router."""
     router = ClaudeRouter()
 
     if len(sys.argv) > 1:
@@ -236,3 +237,7 @@ if __name__ == "__main__":
             scaffold = r["scaffold_key"] or "(none)"
             print(f"{r['category']:<20} {r['model']:<20} {scaffold:<22} {r['confidence']:>+.4f}")
             print(f"  -> {t[:65]}")
+
+
+if __name__ == "__main__":
+    _cli()

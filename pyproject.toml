@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "claude-router"
-version = "0.1.0"
+version = "1.0.0"
 description = "Embedding-based scaffold router for Claude API. Routes tasks to the right scaffold using centroid matching. By Hermes Labs."
 readme = "README.md"
 license = {text = "MIT"}
@@ -42,6 +42,9 @@ Homepage = "https://hermes-labs.ai"
 Documentation = "https://github.com/roli-lpci/claude-router#readme"
 Repository = "https://github.com/roli-lpci/claude-router"
 "Bug Tracker" = "https://github.com/roli-lpci/claude-router/issues"
+
+[project.scripts]
+claude-router = "claude_router:_cli"
 
 [project.optional-dependencies]
 dev = [
