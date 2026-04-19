@@ -1,0 +1,9 @@
+$ claude-router "Evaluate this research paper for methodological rigor"
+
+{
+  "category": "research",
+  "model": "claude-sonnet-4-6",
+  "scaffold_key": "insight-first",
+  "confidence": 0.0412,
+  "cost_per_1k": 0.003
+}

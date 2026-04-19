@@ -1,31 +1,28 @@
 # claude-router
 
-> Route Claude API calls to the cheapest model that works. Embedding-based task classification (~10ms) + 5 validated scaffolds. 11x cost reduction, blind-eval validated on 300+ API calls.
+Local Claude prompt router for model selection, scaffold selection, and cost-aware defaults.
 
-## Overview
+Use this repo when you need to:
+- route Claude prompts to Haiku, Sonnet, or Opus before calling the API
+- apply a validated scaffold only for categories where scaffolding helps
+- keep routing deterministic and local with Ollama embeddings
 
-claude-router classifies incoming prompts against pre-computed embedding centroids using nomic-embed-text via Ollama. Based on the task category, it routes to Haiku, Sonnet, or Opus and optionally prepends a task-specific scaffold that constrains the model's output to improve quality.
+Primary interface:
+- `claude-router "prompt text"`
+- `ClaudeRouter().route(text)`
+- `ClaudeRouter().build_prompt(text, route_result)`
 
-Key finding: scaffolded Haiku beats raw Sonnet on eval/content tasks. Scaffolded Sonnet beats raw Opus on research tasks. Scaffolds hurt coding and operational tasks (anti-finding).
+Outputs:
+- category
+- model
+- tier
+- scaffold_key
+- scaffold_text
+- confidence
+- low_confidence
+- cost_per_1k
 
-## Usage
-
-- [Quick Start](https://github.com/roli-lpci/claude-router#quick-start)
-- [README](https://github.com/roli-lpci/claude-router#readme)
-
-## Key Files
-
-- router.py: Single-file router. ClaudeRouter class with .route() and .build_prompt() methods.
-- scaffolds.json: 5 scaffold templates with constraint text, evidence, and usage guidance.
-- data/centroids.json: Pre-computed task classification embeddings (768-dim, nomic-embed-text).
-- data/routing_table.json: Category to model + scaffold lookup (12 categories).
-- examples/basic_usage.py: End-to-end example with Anthropic API call.
-
-## Dependencies
-
-- Python 3, requests, numpy
-- Ollama running locally with nomic-embed-text model
-
-## License
-
-MIT
+Do not use this repo as:
+- a general LLM gateway
+- a guarantee that the benchmarked routing table matches every workload
+- an agent framework or orchestration layer

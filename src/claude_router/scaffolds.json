@@ -17,7 +17,7 @@
     "task": "Multi-step reasoning, search synthesis, and planning tasks.",
     "text": "Before your final answer, write a PLAN in this format:\n\nG (Goal): Restate the end goal in 1 sentence.\nC (Constraints): List 2-3 hard constraints (time, budget, scope, format limits).\nS (Search strategy): If research is needed, list the 3-5 searches you will run and why. If no search is needed, state 'No external search required. Internal reasoning only.'\nR (Routing): Name the specific sub-task you'll solve first, and why it unblocks the rest.\n\nKeep the entire PLAN to 100 tokens. Then execute in order.\n\nFor search synthesis specifically: Cite results as [1], [2], etc. by position. Answer ONLY from provided results—do not combine with prior knowledge.",
     "evidence": "Haiku+plan-first: 8.2/10 avg on complex research tasks vs raw Sonnet 7.8/10 (benchmark across 12 multi-step reasoning tasks). Planning prefix (12-25 tokens) reduced backtracking and off-topic diversions by 68%. Search synthesis: plan-first Haiku+Sonnet (combined) matched Sonnet-only in accuracy while cutting search volume 31% and API cost proportionally. Anti-finding: Removing the 'why' from search strategy increased wasted queries by 44%.",
-    "when_to_use": "Use for any task with 3+ steps, when synthesis requires multiple searches, or when reasoning could branch (e.g., 'design a GTM plan').",
+    "when_to_use": "Use for any task with 3+ steps, when synthesis requires multiple searches, or when reasoning could branch (e.g., 'design a go-to-market plan').",
     "when_not_to_use": "Do not use for single-answer questions ('What is X?') or when the task explicitly forbids planning disclosure."
   },
   "substance-check": {

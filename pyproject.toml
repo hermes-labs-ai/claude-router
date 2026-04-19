@@ -5,18 +5,18 @@ build-backend = "hatchling.build"
 [project]
 name = "claude-router"
 version = "1.0.0"
-description = "Embedding-based scaffold router for Claude API. Routes tasks to the right scaffold using centroid matching. By Hermes Labs."
+description = "Claude prompt router that chooses the right model tier and scaffold using local embeddings."
 readme = "README.md"
 license = {text = "MIT"}
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [
-    {name = "Hermes Labs", email = "rbosch@lpci.ai"},
+    {name = "Rolando Bosch"},
 ]
 keywords = [
-    "claude", "anthropic", "llm", "routing", "scaffold",
-    "embedding", "cost-optimization", "prompt-engineering",
-    "context-engineering", "agent", "agentic",
+    "claude-router", "claude", "anthropic", "prompt-routing", "model-routing",
+    "scaffold-routing", "cost-optimization", "embedding-classification",
+    "prompt-engineering", "local-first",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -38,18 +38,19 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://hermes-labs.ai"
+Homepage = "https://github.com/roli-lpci/claude-router"
 Documentation = "https://github.com/roli-lpci/claude-router#readme"
 Repository = "https://github.com/roli-lpci/claude-router"
 "Bug Tracker" = "https://github.com/roli-lpci/claude-router/issues"
 
 [project.scripts]
-claude-router = "claude_router:_cli"
+claude-router = "claude_router.router:_cli"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "build",
+    "ruff>=0.5",
 ]
 
 [tool.hatch.build.targets.wheel]

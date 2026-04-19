@@ -1,6 +1,39 @@
 # claude-router
 
-Route Claude API calls to the cheapest model that works. 5 validated scaffolds, embedding-based task classification in ~10ms. Validated on 300+ blind-judged API calls.
+Claude teams overspend on Sonnet or Opus because nobody has a fast, repeatable way to decide when Haiku plus structure is enough.
+
+`claude-router` classifies a prompt locally, chooses the right Claude tier, and prepends the right scaffold when scaffolding actually improves quality.
+
+- "We default to Sonnet for everything because nobody trusts routing by hand."
+- "Some prompts need structure, but we keep discovering that too late."
+- "We know Haiku is cheaper, but we do not know when it is safe."
+- "Prompt reviews catch model-choice mistakes after the API bill already happened."
+
+```bash
+pip install claude-router
+```
+
+```python
+from claude_router import ClaudeRouter
+
+router = ClaudeRouter()
+result = router.route("Evaluate this research paper for methodological rigor")
+print(result["model"], result["scaffold_key"], result["cost_per_1k"])
+```
+
+```text
+claude-haiku-4-5 calibrated-scoring 0.0008
+```
+
+**When To Use It**
+
+Use `claude-router` when you already call Claude models and want a local, deterministic routing layer for eval, research, content, and review prompts.
+
+**When Not To Use It**
+
+Do not use `claude-router` as a general agent framework, as proof that these exact routes transfer to your workload, or if you do not want an Ollama-based local classifier in the loop.
+
+![claude-router preview](assets/preview.png)
 
 ## Results
 
@@ -128,17 +161,4 @@ Benchmarks: [benchmarks/](benchmarks/) | Raw citations: [scaffolds.json](scaffol
 
 Key experiments: 4-condition code/research crossover, scaffolds-vs-operational stress test, scaffolded Sonnet beats Opus 75% on research (6/8 blind wins, 140 API calls).
 
-## Hermes Labs Ecosystem
-
-claude-router is part of the [Hermes Labs](https://hermes-labs.ai) open-source suite:
-
-- [**lintlang**](https://github.com/roli-lpci/lintlang) — Static linter for AI agent tool descriptions and system prompts
-- [**little-canary**](https://github.com/roli-lpci/little-canary) — Prompt injection detection
-- [**zer0dex**](https://github.com/roli-lpci/zer0dex) — Dual-layer memory for AI agents
-- [**zer0lint**](https://github.com/roli-lpci/zer0lint) — mem0 extraction diagnostics
-- [**suy-sideguy**](https://github.com/roli-lpci/suy-sideguy) — Autonomous agent watchdog
-- [**quickthink**](https://github.com/roli-lpci/quickthink) — Planning scaffolding for local LLMs
-
----
-
-Need this calibrated to your pipeline? [Open an issue](https://github.com/roli-lpci/claude-router/issues) or reach out to [Hermes Labs](https://hermes-labs.ai) for custom scaffolds and production integration.
+Need this calibrated to your pipeline? [Open an issue](https://github.com/roli-lpci/claude-router/issues) with the task categories and failure cases you want to benchmark.

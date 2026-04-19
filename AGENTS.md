@@ -1,88 +1,40 @@
 # AGENTS.md
 
-## Overview
+`claude-router` is a local classifier that maps a prompt to a Claude tier and an optional scaffold.
 
-**claude-router** routes Claude API calls to the cheapest model that works using embedding-based task classification + task-specific scaffolds. Single Python file, ~200 LOC, no build step. Blind-eval validated: 11x cost reduction with equal or better quality on eval, research, and content tasks.
+## Use it for
 
-## File Map
+- routing Claude prompts before the API call
+- deciding when Haiku plus a scaffold is enough
+- exposing a deterministic `model` and `scaffold_key` in automation
 
-- `router.py` — The only code file. `ClaudeRouter` class with `.route()` and `.build_prompt()` methods. ~200 LOC.
-- `scaffolds.json` — 5 scaffold templates: calibrated-scoring, insight-first, plan-first, substance-check, bug-hunt. Each includes task description, constraint text, evidence, and when_to_use/when_not_to_use.
-- `data/centroids.json` — Pre-computed task classification embeddings (nomic-embed-text, 768-dim). One centroid per category. **Do not modify.**
-- `data/routing_table.json` — Category -> (model + scaffold) lookup. Maps 12 task categories to Haiku/Sonnet/Opus + optional scaffold. **Do not modify structure.**
-- `README.md` — Full documentation, benchmarks, cost math, anti-findings.
-- `requirements.txt` — Dependencies: `requests`, `numpy`.
-- `examples/basic_usage.py` — End-to-end example: classify, route, call Anthropic API.
+## Do not use it for
 
-## How It Works
+- non-Claude providers
+- proving these exact routes transfer to every workload
+- replacing evals on prompts that are outside the benchmarked categories
 
-1. Embed incoming prompt via Ollama (nomic-embed-text, ~5ms)
-2. Cosine-similarity against centroids for all 12 categories
-3. Look up routing table: best category -> model + scaffold key
-4. If low confidence, fall back to Opus (safe default)
-5. Return scaffold text (if applicable) to prepend to prompt
-
-No LLM calls, no external APIs, ~10ms total latency.
-
-## Testing Changes
+## Minimal commands
 
 ```bash
-# Requires Ollama running with nomic-embed-text
-ollama pull nomic-embed-text
-
-# Test classification on a single prompt
-python router.py "Evaluate this research paper"
-
-# Run test suite (8 default test prompts)
-python router.py
+pip install -e ".[dev]"
+claude-router "Evaluate this research paper for methodological rigor"
+pytest -q
 ```
 
-Expected output: JSON with `{category, model, scaffold_key, confidence, ...}` or a table with routing decisions.
+## Output shape
 
-## What NOT to Change
+- `route()` returns `category`, `model`, `tier`, `scaffold_key`, `scaffold_text`, `confidence`, `low_confidence`, `cost_per_1k`
+- low-confidence inputs fall back to Opus with no scaffold
 
-- **centroids.json** — Pre-computed task classification embeddings. Do not modify.
-- **routing_table.json structure** — The category->model mappings are validated. Adding/removing categories requires retraining centroids. Changing model assignments should only happen after blind evaluation.
+## Success means
 
-## Common Tasks
+- routing returns a valid Claude model ID and scaffold choice
+- empty input fails fast
+- the README quick-start example matches the actual package API
 
-### Add a new scaffold
-1. Edit `scaffolds.json`: add a new key with `task`, `text`, `evidence`, `when_to_use`, `when_not_to_use`.
-2. Do NOT add it to routing_table.json until tested.
-3. Run blind eval on your task domain (10+ judgments) before committing.
-4. Update README.md scaffold table if it becomes a default.
+## Common failure cases
 
-**Anti-finding**: Scaffolds break operational and coding tasks. The router already avoids scaffolding these. Do not scaffold categories marked `null` in routing_table.json.
-
-### Change which model handles a category
-1. Edit `routing_table.json`: update the `"model"` value (haiku/sonnet/opus).
-2. Test against your task distribution with `python router.py`.
-3. Run blind eval (10+ judgments) before merging.
-
-### Debug classification mismatches
-1. Run `python router.py "your prompt"` -- check the `confidence` field (margin between best and second-best category).
-2. Low confidence (<0.02) -> prompt is ambiguous, falls back to Opus automatically.
-3. Wrong category -> centroids trained on a different task distribution. Consider custom centroids via constructor.
-
-### Use custom data files
-```python
-router = ClaudeRouter(
-    centroids_path="my_centroids.json",
-    routing_table_path="my_routing.json",
-    scaffolds_path="my_scaffolds.json"
-)
-```
-
-## Key Constraints
-
-- Requires Ollama running locally with `nomic-embed-text`.
-- Centroids trained on one user's workload -- may not match yours. Test before relying on routing decisions.
-- Scaffolds validated through blind eval. Do not add scaffolds without testing.
-- Scaffolds on operational/coding tasks make quality worse (anti-finding). Router handles this automatically.
-
-## Error Handling
-
-- `RuntimeError`: Ollama is down, timed out, or returned unexpected response format.
-- `ValueError`: JSON files (centroids, routing table, scaffolds) are malformed, missing, or have mismatched keys (e.g., routing table references a scaffold that doesn't exist).
-
-See README.md for benchmarks, cost analysis, and anti-findings.
+- Ollama is not running or `nomic-embed-text` is unavailable
+- custom routing data references a scaffold key that does not exist
+- teams assume the provided centroids match an unrelated prompt distribution
