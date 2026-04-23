@@ -141,4 +141,4 @@ claude-router is part of the [Hermes Labs](https://hermes-labs.ai) open-source s
 
 ---
 
-Need this calibrated to your pipeline? [Open an issue](https://github.com/roli-lpci/claude-router/issues) or reach out to [Hermes Labs](https://hermes-labs.ai) for custom scaffolds and production integration.
+Need this calibrated to your pipeline? [Open an issue](https://github.com/hermes-labs-ai/claude-router/issues) or reach out to [Hermes Labs](https://hermes-labs.ai) for custom scaffolds and production integration.

@@ -10,8 +10,8 @@ Key finding: scaffolded Haiku beats raw Sonnet on eval/content tasks. Scaffolded
 
 ## Usage
 
-- [Quick Start](https://github.com/roli-lpci/claude-router#quick-start)
-- [README](https://github.com/roli-lpci/claude-router#readme)
+- [Quick Start](https://github.com/hermes-labs-ai/claude-router#quick-start)
+- [README](https://github.com/hermes-labs-ai/claude-router#readme)
 
 ## Key Files
 

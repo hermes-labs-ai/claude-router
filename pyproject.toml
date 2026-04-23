@@ -38,9 +38,9 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://hermes-labs.ai"
-Documentation = "https://github.com/roli-lpci/claude-router#readme"
-Repository = "https://github.com/roli-lpci/claude-router"
-"Bug Tracker" = "https://github.com/roli-lpci/claude-router/issues"
+Documentation = "https://github.com/hermes-labs-ai/claude-router#readme"
+Repository = "https://github.com/hermes-labs-ai/claude-router"
+"Bug Tracker" = "https://github.com/hermes-labs-ai/claude-router/issues"
 
 [project.scripts]
 claude-router = "claude_router:_cli"
