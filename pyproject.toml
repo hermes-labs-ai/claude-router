@@ -42,6 +42,7 @@ Homepage = "https://github.com/hermes-labs-ai/claude-router"
 Documentation = "https://github.com/hermes-labs-ai/claude-router#readme"
 Repository = "https://github.com/hermes-labs-ai/claude-router"
 "Bug Tracker" = "https://github.com/hermes-labs-ai/claude-router/issues"
+Changelog = "https://github.com/hermes-labs-ai/claude-router/blob/main/CHANGELOG.md"
 
 [project.scripts]
 claude-router = "claude_router.router:_cli"
@@ -50,7 +51,7 @@ claude-router = "claude_router.router:_cli"
 dev = [
     "pytest>=8.0",
     "build",
-    "ruff>=0.5",
+    "ruff==0.15.6",
 ]
 
 [tool.hatch.build.targets.wheel]
