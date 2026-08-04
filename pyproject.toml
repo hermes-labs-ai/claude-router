@@ -51,7 +51,7 @@ claude-router = "claude_router.router:_cli"
 dev = [
     "pytest>=8.0",
     "build",
-    "ruff>=0.5",
+    "ruff==0.15.6",
 ]
 
 [tool.hatch.build.targets.wheel]
