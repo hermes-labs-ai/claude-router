@@ -9,8 +9,13 @@ Claude teams overspend on Sonnet or Opus because nobody has a fast, repeatable w
 - "We know Haiku is cheaper, but we do not know when it is safe."
 - "Prompt reviews catch model-choice mistakes after the API bill already happened."
 
+## Install
+
+Requires: Python 3.10+, `requests`, `numpy`, and [Ollama](https://ollama.com) running locally with nomic-embed-text.
+
 ```bash
 pip install claude-router
+ollama pull nomic-embed-text
 ```
 
 ```python
@@ -53,15 +58,6 @@ These are the blocker issues. The router handles them automatically:
 - **Opus doesn't scaffold**. Safety-critical evals need Opus raw (MAE 0.0), not scaffolded.
 
 The routing table avoids these entirely: no scaffolds on operational, coding, safety-critical, or conversation tasks.
-
-## Install
-
-Requires: Python 3.10+, `requests`, `numpy`, and [Ollama](https://ollama.com) running locally with nomic-embed-text.
-
-```bash
-pip install claude-router
-ollama pull nomic-embed-text
-```
 
 ## Quick start
 
