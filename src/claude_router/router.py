@@ -125,6 +125,10 @@ class ClaudeRouter:
             raise RuntimeError(f"Ollama embedding request timed out ({OLLAMA_URL})")
         except requests.HTTPError as e:
             raise RuntimeError(f"Ollama returned an error: {e}")
+        except requests.RequestException as e:
+            raise RuntimeError(
+                f"Ollama embedding request failed ({OLLAMA_URL}): {e}"
+            ) from e
 
         try:
             data = resp.json()
