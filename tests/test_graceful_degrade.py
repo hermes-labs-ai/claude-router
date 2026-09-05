@@ -44,3 +44,16 @@ def test_ollama_http_error_raises_runtime_error(router):
         with pytest.raises(RuntimeError) as exc:
             router.route("any text")
     assert "Ollama returned an error" in str(exc.value)
+
+
+def test_ollama_invalid_url_raises_actionable_runtime_error(router):
+    with patch(
+        "claude_router.router.requests.post",
+        side_effect=requests.exceptions.InvalidURL("Invalid URL: no host supplied"),
+    ):
+        with pytest.raises(RuntimeError) as exc:
+            router.route("any text")
+    msg = str(exc.value)
+    assert "Ollama" in msg
+    assert "embedding" in msg
+    assert isinstance(exc.value.__cause__, requests.exceptions.InvalidURL)
