@@ -47,6 +47,7 @@ MODEL_IDS: dict[str, str] = {
 VALID_TIERS = frozenset(MODEL_IDS.keys())
 
 PRICING_UNIT = "usd_per_million_tokens"
+PRICING_BASIS = "first_party_uncached_non_batch_global"
 
 
 def _load_pricing(path: Path = PRICING_FILE) -> dict[str, dict[str, Any]]:
@@ -69,6 +70,11 @@ def _load_pricing(path: Path = PRICING_FILE) -> dict[str, dict[str, Any]]:
     unit = raw.get("unit")
     if unit != PRICING_UNIT:
         raise ValueError(f"model pricing 'unit' must be '{PRICING_UNIT}', got {unit!r}: {path}")
+    if raw.get("basis") != PRICING_BASIS:
+        raise ValueError(
+            f"model pricing 'basis' must be '{PRICING_BASIS}', "
+            f"got {raw.get('basis')!r}: {path}"
+        )
     for field in ("as_of", "source"):
         value = raw.get(field)
         if not isinstance(value, str) or not value.strip():
@@ -133,6 +139,7 @@ def _load_pricing(path: Path = PRICING_FILE) -> dict[str, dict[str, Any]]:
             "output_usd_per_mtok": rates["output"],
             "input_usd_per_1k": per_1k["input"],
             "output_usd_per_1k": per_1k["output"],
+            "basis": raw["basis"],
             "as_of": raw["as_of"],
             "source": raw["source"],
         }

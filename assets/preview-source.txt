@@ -13,6 +13,7 @@ $ claude-router "Evaluate this research paper for methodological rigor"
     "output_usd_per_mtok": 5.0,
     "input_usd_per_1k": 0.001,
     "output_usd_per_1k": 0.005,
+    "basis": "first_party_uncached_non_batch_global",
     "as_of": "2026-09-06",
     "source": "https://platform.claude.com/docs/en/about-claude/pricing"
   },

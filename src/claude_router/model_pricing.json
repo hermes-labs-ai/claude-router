@@ -2,7 +2,7 @@
   "as_of": "2026-09-06",
   "source": "https://platform.claude.com/docs/en/about-claude/pricing",
   "unit": "usd_per_million_tokens",
-  "basis": "Base (uncached, non-batch, global inference) first-party Claude API list prices. Prompt caching, the Batch API, and inference_geo apply multipliers that are NOT reflected here.",
+  "basis": "first_party_uncached_non_batch_global",
   "models": {
     "haiku": {
       "model_id": "claude-haiku-4-5",
@@ -19,5 +19,6 @@
       "input": 5.0,
       "output": 25.0
     }
-  }
+  },
+  "basis_notes": "Base (uncached, non-batch, global inference) first-party Claude API list prices. Prompt caching, the Batch API, and inference_geo apply multipliers that are NOT reflected here."
 }

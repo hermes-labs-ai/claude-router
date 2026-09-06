@@ -191,3 +191,18 @@ def test_valid_catalog_with_different_prices_is_accepted(tmp_path: Path) -> None
     priced = packaged_router._load_pricing(write_catalog(tmp_path, data))
     assert priced["haiku"]["input_usd_per_1k"] == 0.002
     assert priced["haiku"]["output_usd_per_1k"] == 0.009
+
+
+@pytest.mark.parametrize("module", [packaged_router, standalone_router])
+@pytest.mark.parametrize("basis", [None, "", "cached", "batch", "regional"])
+def test_non_base_pricing_basis_is_rejected(tmp_path: Path, module, basis) -> None:
+    data = catalog()
+    data["basis"] = basis
+    with pytest.raises(ValueError, match="'basis' must be"):
+        module._load_pricing(write_catalog(tmp_path, data))
+
+
+@pytest.mark.parametrize("module", [packaged_router, standalone_router])
+def test_pricing_basis_is_returned(module) -> None:
+    for pricing in module.MODEL_PRICING.values():
+        assert pricing["basis"] == "first_party_uncached_non_batch_global"
