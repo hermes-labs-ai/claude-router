@@ -1,0 +1,35 @@
+version = 1
+
+[gate]
+fast_budget_seconds = 8.0
+full_required_local = true
+
+[review]
+provider = "hermes-pr-review"
+argv = ["hermes-pr-review"]
+timeout_seconds = 180.0
+
+[[fast]]
+name = "ruff"
+argv = ["python", "-m", "ruff", "check", "src", "tests", "router.py", "examples", "scripts"]
+timeout_seconds = 5.0
+
+[[fast]]
+name = "diff-check"
+argv = ["git", "diff", "--check"]
+timeout_seconds = 2.0
+
+[[full]]
+name = "ruff"
+argv = ["python", "-m", "ruff", "check", "src", "tests", "router.py", "examples", "scripts"]
+timeout_seconds = 30.0
+
+[[full]]
+name = "pytest"
+argv = ["python", "-m", "pytest", "-q"]
+timeout_seconds = 120.0
+
+[[full]]
+name = "wheel"
+argv = ["python", "-m", "build", "--wheel"]
+timeout_seconds = 120.0
