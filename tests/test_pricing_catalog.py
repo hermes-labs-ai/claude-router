@@ -177,10 +177,10 @@ def test_non_date_as_of_is_rejected(tmp_path: Path) -> None:
     assert "must be an ISO date" in load_bad(tmp_path, lambda d: d.__setitem__("as_of", "TBD"))
 
 
-def test_price_that_rounds_away_to_zero_is_rejected(tmp_path: Path) -> None:
-    """Rounding to 6dp must never turn a real price into a free call."""
-    message = load_bad(tmp_path, lambda d: d["models"]["haiku"].__setitem__("input", 0.0001))
-    assert "rounds to $0.00 per 1K tokens" in message
+def test_price_that_underflows_to_zero_is_rejected(tmp_path: Path) -> None:
+    """A converted positive rate must not silently become a free call."""
+    message = load_bad(tmp_path, lambda d: d["models"]["haiku"].__setitem__("input", 5e-324))
+    assert "underflows to $0.00 per 1K tokens" in message
 
 
 def test_valid_catalog_with_different_prices_is_accepted(tmp_path: Path) -> None:
@@ -206,3 +206,13 @@ def test_non_base_pricing_basis_is_rejected(tmp_path: Path, module, basis) -> No
 def test_pricing_basis_is_returned(module) -> None:
     for pricing in module.MODEL_PRICING.values():
         assert pricing["basis"] == "first_party_uncached_non_batch_global"
+
+
+@pytest.mark.parametrize("module", [packaged_router, standalone_router])
+def test_per_1k_conversion_preserves_catalog_precision(tmp_path: Path, module) -> None:
+    data = catalog()
+    data["models"]["haiku"]["input"] = 1.234567
+    data["models"]["haiku"]["output"] = 0.0001
+    pricing = module._load_pricing(write_catalog(tmp_path, data))["haiku"]
+    assert pricing["input_usd_per_1k"] == 1.234567 / 1000
+    assert pricing["output_usd_per_1k"] == 0.0001 / 1000

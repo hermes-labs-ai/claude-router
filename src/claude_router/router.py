@@ -124,13 +124,13 @@ def _load_pricing(path: Path = PRICING_FILE) -> dict[str, dict[str, Any]]:
                     f"finite price, got {value!r}: {path}"
                 )
             rates[field] = float(value)
-        per_1k = {f: round(rates[f] / 1000.0, 6) for f in ("input", "output")}
+        per_1k = {f: rates[f] / 1000.0 for f in ("input", "output")}
         for field, value in per_1k.items():
-            # A positive price that rounds away to 0.0 would silently price calls as free.
+            # Reject floating-point underflow instead of silently pricing calls as free.
             if value == 0.0:
                 raise ValueError(
                     f"model pricing tier '{tier}' field '{field}' is {rates[field]!r} per "
-                    f"million tokens, which rounds to $0.00 per 1K tokens: {path}"
+                    f"million tokens, which underflows to $0.00 per 1K tokens: {path}"
                 )
         priced[tier] = {
             "model_id": model_id,
