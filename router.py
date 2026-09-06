@@ -36,8 +36,8 @@ SCAFFOLDS_FILE = Path(__file__).parent / "scaffolds.json"
 PRICING_FILE = Path(__file__).parent / "src" / "claude_router" / "model_pricing.json"
 OLLAMA_URL = os.getenv("OLLAMA_EMBED_URL", "http://localhost:11434/api/embed")
 
-# Pinned to the models the bundled benchmarks were actually run against. Changing an
-# ID here invalidates the evidence in benchmarks/ — do not bump without a new run.
+# Public routing contract. The bundled benchmarks include historical model generations,
+# so changing an ID needs fresh validation rather than treating old results as transferable.
 MODEL_IDS: dict[str, str] = {
     "haiku": "claude-haiku-4-5",
     "sonnet": "claude-sonnet-4-6",

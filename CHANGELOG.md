@@ -18,8 +18,10 @@ the list price of the model ID actually returned.
   estimate; the example now prices a call from the token counts the API reports
 - Benchmark results are unchanged; the PF-001 cost table and PF-002's "73% cheaper"
   multiplier are labelled as their historical 2026-03-20 run-date pricing
-- Corrected `assets/preview-source.txt`, which showed a `research`/`claude-sonnet-4-6`
-  route for a command that actually routes to `eval`/`claude-haiku-4-5`
+- Corrected `assets/preview-source.txt` and regenerated `assets/preview.png`; the old
+  preview showed a `research`/`claude-sonnet-4-6` route for a command that actually
+  routes to `eval`/`claude-haiku-4-5`. Added a deterministic renderer so the image can
+  be reproduced from the checked-in CLI output.
 
 ## v1.0.0 — 2026-04-17
 

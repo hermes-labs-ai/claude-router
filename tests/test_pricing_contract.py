@@ -43,7 +43,7 @@ def route_tier(router: ClaudeRouter, tier: str, monkeypatch: pytest.MonkeyPatch)
 
 @pytest.mark.parametrize("tier", sorted(OFFICIAL))
 def test_model_ids_are_not_relabelled(router: ClaudeRouter, tier: str, monkeypatch: pytest.MonkeyPatch) -> None:
-    """The bundled IDs are tied to historical benchmark evidence — they must not move."""
+    """A pricing-only change must not silently alter the public routing contract."""
     assert route_tier(router, tier, monkeypatch)["model"] == OFFICIAL[tier]["model_id"]
 
 
