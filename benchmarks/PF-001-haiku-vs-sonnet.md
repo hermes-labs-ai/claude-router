@@ -134,6 +134,10 @@ Ground truth scores and how close each condition got:
 
 ## COST IMPLICATIONS
 
+These are the list prices in effect on the 2026-03-20 run date, kept as the historical
+record of what this experiment cost. **They are not current prices and not the prices of
+the model IDs the router ships with** — for those, see `src/claude_router/model_pricing.json`.
+
 | Model | Input $/1M tokens | Output $/1M tokens | Relative Cost |
 |---|---|---|---|
 | Haiku | $0.80 | $4.00 | 1x |

@@ -4,8 +4,9 @@ claude-router: Route Claude API calls to the cheapest model that works.
 
 Zero-LLM task classifier using embedding centroids. ~10ms per classification.
 Injects task-specific scaffolds that make Haiku outperform Sonnet/Opus on
-eval, research, and content tasks. Substantial cost reduction versus an
-all-frontier-model baseline (projection from per-category benchmarks).
+eval, research, and content tasks. Whether that saves money on your workload
+depends on its input/output token mix; `route()` returns both list prices so
+you can compute it rather than assume it.
 
 Usage:
     from router import ClaudeRouter
@@ -19,8 +20,10 @@ Requires: requests, numpy, Ollama running with nomic-embed-text
 from __future__ import annotations
 
 import json
+import math
 import os
 import sys
+from datetime import date
 from pathlib import Path
 from typing import Any, Optional
 
@@ -29,21 +32,126 @@ import requests
 
 DATA_DIR = Path(__file__).parent / "data"
 SCAFFOLDS_FILE = Path(__file__).parent / "scaffolds.json"
+# The one maintained pricing catalog, shared with the packaged router. Edit prices there.
+PRICING_FILE = Path(__file__).parent / "src" / "claude_router" / "model_pricing.json"
 OLLAMA_URL = os.getenv("OLLAMA_EMBED_URL", "http://localhost:11434/api/embed")
 
+# Public routing contract. The bundled benchmarks include historical model generations,
+# so changing an ID needs fresh validation rather than treating old results as transferable.
 MODEL_IDS: dict[str, str] = {
     "haiku": "claude-haiku-4-5",
     "sonnet": "claude-sonnet-4-6",
     "opus": "claude-opus-4-6",
 }
 
-COST_PER_1K: dict[str, float] = {
-    "haiku": 0.0008,
-    "sonnet": 0.003,
-    "opus": 0.015,
-}
-
 VALID_TIERS = frozenset(MODEL_IDS.keys())
+
+PRICING_UNIT = "usd_per_million_tokens"
+PRICING_BASIS = "first_party_uncached_non_batch_global"
+
+
+def _load_pricing(path: Path = PRICING_FILE) -> dict[str, dict[str, Any]]:
+    """Load and validate the shared model pricing catalog.
+
+    One catalog backs both this module and the packaged router, so a price is
+    corrected in exactly one place. Every field is checked up front: a malformed or
+    mismatched catalog must fail loudly rather than silently mis-price calls.
+    """
+    try:
+        with open(path) as f:
+            raw = json.load(f)
+    except FileNotFoundError:
+        raise ValueError(f"model pricing file not found: {path}")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"model pricing file is not valid JSON: {path} ({e})")
+    if not isinstance(raw, dict):
+        raise ValueError(f"model pricing file must be a JSON object: {path}")
+
+    unit = raw.get("unit")
+    if unit != PRICING_UNIT:
+        raise ValueError(f"model pricing 'unit' must be '{PRICING_UNIT}', got {unit!r}: {path}")
+    if raw.get("basis") != PRICING_BASIS:
+        raise ValueError(
+            f"model pricing 'basis' must be '{PRICING_BASIS}', "
+            f"got {raw.get('basis')!r}: {path}"
+        )
+    for field in ("as_of", "source"):
+        value = raw.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"model pricing '{field}' must be a non-empty string: {path}")
+    # A visible as-of date is the whole point of the catalog, so it has to be a real date:
+    # a placeholder like "TBD" would read as provenance while carrying none.
+    try:
+        date.fromisoformat(raw["as_of"])
+    except ValueError:
+        raise ValueError(
+            f"model pricing 'as_of' must be an ISO date (YYYY-MM-DD), "
+            f"got {raw['as_of']!r}: {path}"
+        )
+
+    models = raw.get("models")
+    if not isinstance(models, dict):
+        raise ValueError(f"model pricing 'models' must be a JSON object: {path}")
+    unknown = sorted(set(models) - VALID_TIERS)
+    if unknown:
+        raise ValueError(
+            f"model pricing has unknown tier(s) {', '.join(unknown)} "
+            f"(valid: {', '.join(sorted(VALID_TIERS))}): {path}"
+        )
+
+    priced: dict[str, dict[str, Any]] = {}
+    for tier, model_id in MODEL_IDS.items():
+        if tier not in models:
+            raise ValueError(f"model pricing is missing an entry for tier '{tier}': {path}")
+        entry = models[tier]
+        if not isinstance(entry, dict):
+            raise ValueError(f"model pricing tier '{tier}' must be a JSON object: {path}")
+        if entry.get("model_id") != model_id:
+            raise ValueError(
+                f"model pricing tier '{tier}' prices {entry.get('model_id')!r} but the "
+                f"router routes that tier to {model_id!r}: {path}"
+            )
+        rates: dict[str, float] = {}
+        for field in ("input", "output"):
+            value = entry.get(field)
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(
+                    f"model pricing tier '{tier}' field '{field}' must be a number, "
+                    f"got {value!r}: {path}"
+                )
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(
+                    f"model pricing tier '{tier}' field '{field}' must be a positive "
+                    f"finite price, got {value!r}: {path}"
+                )
+            rates[field] = float(value)
+        per_1k = {f: rates[f] / 1000.0 for f in ("input", "output")}
+        for field, value in per_1k.items():
+            # Reject floating-point underflow instead of silently pricing calls as free.
+            if value == 0.0:
+                raise ValueError(
+                    f"model pricing tier '{tier}' field '{field}' is {rates[field]!r} per "
+                    f"million tokens, which underflows to $0.00 per 1K tokens: {path}"
+                )
+        priced[tier] = {
+            "model_id": model_id,
+            "input_usd_per_mtok": rates["input"],
+            "output_usd_per_mtok": rates["output"],
+            "input_usd_per_1k": per_1k["input"],
+            "output_usd_per_1k": per_1k["output"],
+            "basis": raw["basis"],
+            "as_of": raw["as_of"],
+            "source": raw["source"],
+        }
+    return priced
+
+
+MODEL_PRICING: dict[str, dict[str, Any]] = _load_pricing()
+
+# DEPRECATED. Input tokens only, USD per 1K — a call also costs output tokens, which
+# this scalar does not and never did include. Derived from MODEL_PRICING so it cannot
+# drift from the catalog. Prefer MODEL_PRICING[tier] or route()["pricing"].
+COST_PER_1K: dict[str, float] = {tier: p["input_usd_per_1k"] for tier, p in MODEL_PRICING.items()}
 
 
 class ClaudeRouter:
@@ -154,7 +262,12 @@ class ClaudeRouter:
 
         Returns:
             dict with keys: category, model, tier, scaffold_key, scaffold_text,
-            confidence, low_confidence, cost_per_1k
+            confidence, low_confidence, pricing, cost_per_1k, cost_per_1k_basis
+
+            `pricing` carries the model's exact base input and output list prices
+            (per million tokens and per 1K tokens) plus the `as_of` date and `source`
+            they were read from. `cost_per_1k` is retained for backward compatibility
+            and is input tokens only — priced calls need `pricing` as well.
         """
         if not text or not text.strip():
             raise ValueError("Input text cannot be empty")
@@ -184,6 +297,8 @@ class ClaudeRouter:
         if scaffold_key and scaffold_key in self.scaffolds:
             scaffold_text = self.scaffolds[scaffold_key]["text"]
 
+        pricing = MODEL_PRICING[tier]
+
         return {
             "category": best_cat,
             "model": MODEL_IDS[tier],
@@ -192,7 +307,9 @@ class ClaudeRouter:
             "scaffold_text": scaffold_text,
             "confidence": round(confidence, 4),
             "low_confidence": low_confidence,
-            "cost_per_1k": COST_PER_1K[tier],
+            "pricing": dict(pricing),
+            "cost_per_1k": pricing["input_usd_per_1k"],
+            "cost_per_1k_basis": "input_tokens_only",
         }
 
     def build_prompt(self, text: str, route_result: Optional[dict] = None) -> str:

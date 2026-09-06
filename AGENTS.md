@@ -24,7 +24,10 @@ pytest -q
 
 ## Output shape
 
-- `route()` returns `category`, `model`, `tier`, `scaffold_key`, `scaffold_text`, `confidence`, `low_confidence`, `cost_per_1k`
+- `route()` returns `category`, `model`, `tier`, `scaffold_key`, `scaffold_text`, `confidence`, `low_confidence`, `pricing`, `cost_per_1k`, `cost_per_1k_basis`
+- `pricing` gives the routed model's exact base input and output list prices plus the `as_of` date and `source` URL
+- `cost_per_1k` is deprecated and input-only; never price a call from it alone
+- prices live in one catalog, `src/claude_router/model_pricing.json`, read by both routers — edit prices there only
 - low-confidence inputs fall back to Opus with no scaffold
 
 ## Success means
@@ -37,4 +40,5 @@ pytest -q
 
 - Ollama is not running or `nomic-embed-text` is unavailable
 - custom routing data references a scaffold key that does not exist
+- the pricing catalog is edited to a model ID the router does not route to, or to a unit other than `usd_per_million_tokens` (both rejected at load)
 - teams assume the provided centroids match an unrelated prompt distribution
