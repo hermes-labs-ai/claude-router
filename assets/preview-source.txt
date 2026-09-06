@@ -1,9 +1,21 @@
 $ claude-router "Evaluate this research paper for methodological rigor"
 
 {
-  "category": "research",
-  "model": "claude-sonnet-4-6",
-  "scaffold_key": "insight-first",
-  "confidence": 0.0412,
-  "cost_per_1k": 0.003
+  "category": "eval",
+  "model": "claude-haiku-4-5",
+  "tier": "haiku",
+  "scaffold_key": "calibrated-scoring",
+  "confidence": 0.0237,
+  "low_confidence": false,
+  "pricing": {
+    "model_id": "claude-haiku-4-5",
+    "input_usd_per_mtok": 1.0,
+    "output_usd_per_mtok": 5.0,
+    "input_usd_per_1k": 0.001,
+    "output_usd_per_1k": 0.005,
+    "as_of": "2026-09-06",
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+  },
+  "cost_per_1k": 0.001,
+  "cost_per_1k_basis": "input_tokens_only"
 }

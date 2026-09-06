@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+Pricing contract. `route()` previously returned a single unlabelled `cost_per_1k` scalar
+carried over from the 2026-03 benchmark runs; two of the three values no longer matched
+the list price of the model ID actually returned.
+
+- `route()` now returns `pricing` with the routed model's exact base input and output list
+  prices (per MTok and per 1K), plus the `as_of` date and `source` URL they were read from
+- Prices moved into one maintained catalog, `src/claude_router/model_pricing.json`, read by
+  both the packaged router and the standalone `router.py`; validated on load, with model-ID
+  and unit mismatches rejected rather than silently mis-pricing calls
+- `cost_per_1k` is retained and unchanged in shape but is now derived from the catalog and
+  documented as **deprecated, input tokens only** (`cost_per_1k_basis`). Corrected values:
+  haiku `0.0008` → `0.001`, opus `0.015` → `0.005`; sonnet unchanged at `0.003`
+- Removed the README monthly-cost projection and the example's character-count cost
+  estimate; the example now prices a call from the token counts the API reports
+- Benchmark results are unchanged; the PF-001 cost table and PF-002's "73% cheaper"
+  multiplier are labelled as their historical 2026-03-20 run-date pricing
+- Corrected `assets/preview-source.txt`, which showed a `research`/`claude-sonnet-4-6`
+  route for a command that actually routes to `eval`/`claude-haiku-4-5`
+
 ## v1.0.0 — 2026-04-17
 
 Initial public release. 5 scaffolds, embedding-based routing.

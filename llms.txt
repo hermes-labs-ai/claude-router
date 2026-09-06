@@ -20,7 +20,15 @@ Outputs:
 - scaffold_text
 - confidence
 - low_confidence
-- cost_per_1k
+- pricing (model_id, input_usd_per_mtok, output_usd_per_mtok, input_usd_per_1k,
+  output_usd_per_1k, as_of, source)
+- cost_per_1k (deprecated; input tokens only)
+- cost_per_1k_basis
+
+Prices come from one maintained catalog, src/claude_router/model_pricing.json, read by
+both the packaged router and the standalone router.py. They are base uncached non-batch
+list prices carrying the date and URL they were read from. Pricing a call requires the
+input and output rates together; cost_per_1k is the input rate alone.
 
 Do not use this repo as:
 - a general LLM gateway

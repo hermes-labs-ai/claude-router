@@ -23,11 +23,13 @@ from claude_router import ClaudeRouter
 
 router = ClaudeRouter()
 result = router.route("Evaluate this research paper for methodological rigor")
-print(result["model"], result["scaffold_key"], result["cost_per_1k"])
+print(result["model"], result["scaffold_key"])
+print(result["pricing"]["input_usd_per_mtok"], result["pricing"]["output_usd_per_mtok"])
 ```
 
 ```text
-claude-haiku-4-5 calibrated-scoring 0.0008
+claude-haiku-4-5 calibrated-scoring
+1.0 5.0
 ```
 
 **When To Use It**
@@ -42,12 +44,16 @@ Do not use `claude-router` as a general agent framework, as proof that these exa
 
 ## Results
 
-| Task | Best Setup | Cost | Quality vs. Baseline |
+| Task | Best Setup | Run cost (2026-03) | Quality vs. Baseline |
 |------|-----------|------|------------|
 | Eval/scoring | Haiku + scaffold | $0.06 | MAE 1.0 (vs Sonnet raw: 1.2) |
 | Research | Sonnet + scaffold | $0.28 | 8.49/10 (vs Opus raw: 7.45) |
 | Content | Haiku + scaffold | $0.06 | 4/5 blind wins vs Sonnet |
 | Code review | Sonnet (raw) | $0.28 | Sonnet raw preferred; scaffolds hurt coding |
+
+Run costs are what these benchmark batches cost at the list prices in effect on their
+2026-03 run dates. They are historical, not a forecast, and not current pricing — see
+[Pricing](#pricing).
 
 ## Anti-findings
 
@@ -69,7 +75,10 @@ result = router.route("Evaluate this research paper for methodological rigor")
 
 print(result["model"])           # claude-haiku-4-5
 print(result["scaffold_key"])    # calibrated-scoring
-print(result["cost_per_1k"])     # 0.0008
+print(result["pricing"])         # {'model_id': 'claude-haiku-4-5',
+                                 #  'input_usd_per_mtok': 1.0, 'output_usd_per_mtok': 5.0,
+                                 #  'input_usd_per_1k': 0.001, 'output_usd_per_1k': 0.005,
+                                 #  'as_of': '2026-09-06', 'source': 'https://platform.claude.com/...'}
 
 # Build prompt with scaffold prepended
 prompt = router.build_prompt("Evaluate this research paper...")
@@ -121,15 +130,32 @@ safety_critical   → Opus    (raw)
 
 Low confidence → Opus (safe default).
 
-## Cost math
+## Pricing
 
-For 10,000 Claude API calls/month:
+`route()` returns the routed model's exact list prices, with the date and source they
+were read from, so you can do the arithmetic on your own token volumes:
 
-| Strategy | Cost | Quality |
-|----------|------|---------|
-| All Opus | $6,800 | Baseline |
-| All Sonnet | $2,800 | Lower on eval, equal on code |
-| claude-router | ~$620 | Equal or better on eval/research/content |
+| Tier | Model ID | Input $/MTok | Output $/MTok |
+|------|----------|-------------:|--------------:|
+| Haiku | `claude-haiku-4-5` | $1.00 | $5.00 |
+| Sonnet | `claude-sonnet-4-6` | $3.00 | $15.00 |
+| Opus | `claude-opus-4-6` | $5.00 | $25.00 |
+
+Base (uncached, non-batch, global-inference) first-party Claude API prices as of
+**2026-09-06**, from [platform.claude.com/docs/en/about-claude/pricing](https://platform.claude.com/docs/en/about-claude/pricing).
+Prompt caching, the Batch API, and `inference_geo` all apply multipliers this table does
+not model. The single maintained copy is [`src/claude_router/model_pricing.json`](src/claude_router/model_pricing.json),
+read by both the packaged router and `router.py`.
+
+This repo publishes no cost-savings total. What routing saves depends on your prompt mix
+and, critically, on your input:output token ratio — output costs 5x input on every tier
+above, so a savings figure computed from input price alone is wrong. Multiply your own
+measured token counts by the two columns above.
+
+`result["cost_per_1k"]` is still returned for existing consumers. It is **deprecated and
+input-only** (`result["cost_per_1k_basis"] == "input_tokens_only"`): it is the input price
+per 1K tokens and has never included output tokens. Use `result["pricing"]` for anything
+that needs to be right.
 
 ## Customization
 
@@ -149,7 +175,9 @@ router = ClaudeRouter(
 - Centroids trained on one task distribution — test on your workload
 - The classifier is not perfect — ambiguous prompts fall to low confidence and default to Opus
 - Anti-findings are real: scaffolds on coding/operational make things worse
-- Lite mode (Haiku-first routing for max savings) planned for v1.1
+- Prices are a dated snapshot, not a live feed — re-check `model_pricing.json` against the
+  published source before relying on it for billing
+- Lite mode (Haiku-first routing) planned for v1.1
 
 ## Evidence
 

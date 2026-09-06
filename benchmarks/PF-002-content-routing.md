@@ -4,6 +4,11 @@
 **Conditions:** A (Haiku raw), B (Haiku scaffolded), C (Sonnet raw)
 **Judge:** Claude Opus 4 (comparative scoring)
 
+> The "73% cheaper" figures below are derived from the list prices in effect on the
+> 2026-03-20 run date (see PF-001). **They are not current prices and not the prices of the
+> model IDs the router ships with** — for those, see `src/claude_router/model_pricing.json`.
+> Quality results are unchanged; only the cost multiplier is dated.
+
 ## Results by Category
 
 ### Content Drafting (5 tasks)

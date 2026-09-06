@@ -13,7 +13,6 @@ Usage:
 
 import os
 import sys
-import json
 
 # Import the router
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -47,7 +46,8 @@ def main():
     print(f"   Model:        {route['model']}")
     print(f"   Scaffold:     {route['scaffold_key'] or '(none)'}")
     print(f"   Confidence:   {route['confidence']:.4f}")
-    print(f"   Cost/1K:      ${route['cost_per_1k']:.4f}")
+    print(f"   Input $/MTok: {route['pricing']['input_usd_per_mtok']}")
+    print(f"   Output $/MTok: {route['pricing']['output_usd_per_mtok']}")
 
     if route["low_confidence"]:
         print("   Low confidence -- consider manual review")
@@ -103,18 +103,19 @@ def main():
         print(f"API call failed: {e}")
         return
 
-    # 7. Show cost comparison
-    print("\nCost comparison:")
-    haiku_cost = (len(f"{task}{research_text}") / 1000) * 0.0008
-    sonnet_cost = (len(f"{task}{research_text}") / 1000) * 0.003
-    opus_cost = (len(f"{task}{research_text}") / 1000) * 0.015
-    routed_cost = (len(f"{task}{research_text}") / 1000) * route["cost_per_1k"]
+    # 7. Price this call from the token counts the API actually reported.
+    #    Do not estimate tokens from character counts, and do not price a call from the
+    #    input rate alone -- output costs 5x input on every tier.
+    pricing = route["pricing"]
+    usage = response.usage
+    input_cost = usage.input_tokens * pricing["input_usd_per_mtok"] / 1_000_000
+    output_cost = usage.output_tokens * pricing["output_usd_per_mtok"] / 1_000_000
 
-    print(f"   Haiku:     ${haiku_cost:.4f}")
-    print(f"   Sonnet:    ${sonnet_cost:.4f}")
-    print(f"   Opus:      ${opus_cost:.4f}")
-    print(f"   Routed:    ${routed_cost:.4f} ({route['model']})")
-    print(f"   Savings:   {((opus_cost - routed_cost) / opus_cost * 100):.0f}% vs Opus")
+    print(f"\nCost of this call ({route['model']}):")
+    print(f"   Input:     {usage.input_tokens:>6} tok x ${pricing['input_usd_per_mtok']}/MTok  = ${input_cost:.6f}")
+    print(f"   Output:    {usage.output_tokens:>6} tok x ${pricing['output_usd_per_mtok']}/MTok = ${output_cost:.6f}")
+    print(f"   Total:     ${input_cost + output_cost:.6f}")
+    print(f"   Prices as of {pricing['as_of']} -- {pricing['source']}")
 
 
 if __name__ == "__main__":
