@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Pricing sources must be HTTPS documentation URLs on the first-party host; placeholders
+  and unrelated hosts are rejected by both router entrypoints.
+- Development installs include Pillow for the preview renderer; its specification names
+  the required Menlo font. Pricing examples list the returned basis field.
+
 Pricing contract. `route()` previously returned a single unlabelled `cost_per_1k` scalar
 carried over from the 2026-03 benchmark runs; two of the three values no longer matched
 the list price of the model ID actually returned.

@@ -78,6 +78,7 @@ print(result["scaffold_key"])    # calibrated-scoring
 print(result["pricing"])         # {'model_id': 'claude-haiku-4-5',
                                  #  'input_usd_per_mtok': 1.0, 'output_usd_per_mtok': 5.0,
                                  #  'input_usd_per_1k': 0.001, 'output_usd_per_1k': 0.005,
+                                 #  'basis': 'first_party_uncached_non_batch_global',
                                  #  'as_of': '2026-09-06', 'source': 'https://platform.claude.com/...'}
 
 # Build prompt with scaffold prepended

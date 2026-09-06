@@ -21,7 +21,7 @@ Outputs:
 - confidence
 - low_confidence
 - pricing (model_id, input_usd_per_mtok, output_usd_per_mtok, input_usd_per_1k,
-  output_usd_per_1k, as_of, source)
+  output_usd_per_1k, basis, as_of, source)
 - cost_per_1k (deprecated; input tokens only)
 - cost_per_1k_basis
 
