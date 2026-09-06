@@ -216,3 +216,19 @@ def test_per_1k_conversion_preserves_catalog_precision(tmp_path: Path, module) -
     pricing = module._load_pricing(write_catalog(tmp_path, data))["haiku"]
     assert pricing["input_usd_per_1k"] == 1.234567 / 1000
     assert pricing["output_usd_per_1k"] == 0.0001 / 1000
+
+
+@pytest.mark.parametrize("module", [packaged_router, standalone_router])
+@pytest.mark.parametrize("source", [
+    "TBD",
+    "http://platform.claude.com/docs/en/about-claude/pricing",
+    "https://example.com/docs/pricing",
+    "https://platform.claude.com.example.com/docs/pricing",
+    "https://user@platform.claude.com/docs/pricing",
+    "https://platform.claude.com/",
+])
+def test_non_first_party_documentation_source_is_rejected(tmp_path: Path, module, source) -> None:
+    data = catalog()
+    data["source"] = source
+    with pytest.raises(ValueError, match="'source' must be an absolute HTTPS"):
+        module._load_pricing(write_catalog(tmp_path, data))

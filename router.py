@@ -26,6 +26,7 @@ import sys
 from datetime import date
 from pathlib import Path
 from typing import Any, Optional
+from urllib.parse import urlsplit
 
 import numpy as np
 import requests
@@ -79,6 +80,20 @@ def _load_pricing(path: Path = PRICING_FILE) -> dict[str, dict[str, Any]]:
         value = raw.get(field)
         if not isinstance(value, str) or not value.strip():
             raise ValueError(f"model pricing '{field}' must be a non-empty string: {path}")
+    source = urlsplit(raw["source"])
+    if (
+        source.scheme != "https"
+        or source.hostname != "platform.claude.com"
+        or source.username is not None
+        or source.password is not None
+        or source.port not in (None, 443)
+        or not source.path.startswith("/docs/")
+        or any(char.isspace() for char in raw["source"])
+    ):
+        raise ValueError(
+            f"model pricing 'source' must be an absolute HTTPS documentation URL "
+            f"on platform.claude.com, got {raw['source']!r}: {path}"
+        )
     # A visible as-of date is the whole point of the catalog, so it has to be a real date:
     # a placeholder like "TBD" would read as provenance while carrying none.
     try:

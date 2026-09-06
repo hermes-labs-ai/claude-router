@@ -3,7 +3,7 @@
 - Dimensions: `1600x900`
 - Format: static PNG terminal card
 - Background: page `#0b1020`, panel `#111827`, header `#0f172a`
-- Typography: monospace (`Menlo` or fallback)
+- Typography: monospace (`Menlo`)
 - Padding: 72px outer, 48px inner
 - Chrome: rounded panel with three header dots
 - Prompt color: `#60a5fa`

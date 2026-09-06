@@ -51,6 +51,7 @@ claude-router = "claude_router.router:_cli"
 dev = [
     "pytest>=8.0",
     "build",
+    "Pillow",
     "ruff==0.15.6",
 ]
 
