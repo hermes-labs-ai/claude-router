@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-06",
+  "as_of": "2026-09-11",
   "source": "https://platform.claude.com/docs/en/about-claude/pricing",
   "unit": "usd_per_million_tokens",
   "basis": "first_party_uncached_non_batch_global",
@@ -10,14 +10,19 @@
       "output": 5.0
     },
     "sonnet": {
-      "model_id": "claude-sonnet-4-6",
-      "input": 3.0,
-      "output": 15.0
+      "model_id": "claude-sonnet-5",
+      "input": 2.0,
+      "output": 10.0
     },
     "opus": {
-      "model_id": "claude-opus-4-6",
+      "model_id": "claude-opus-5",
       "input": 5.0,
       "output": 25.0
+    },
+    "fable": {
+      "model_id": "claude-fable-5-1",
+      "input": 10.0,
+      "output": 50.0
     }
   },
   "basis_notes": "Base (uncached, non-batch, global inference) first-party Claude API list prices. Prompt caching, the Batch API, and inference_geo apply multipliers that are NOT reflected here."

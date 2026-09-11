@@ -3,7 +3,8 @@
 Local Claude prompt router for model selection, scaffold selection, and cost-aware defaults.
 
 Use this repo when you need to:
-- route Claude prompts to Haiku, Sonnet, or Opus before calling the API
+- route Claude prompts to Haiku, Sonnet, or Opus before calling the API (Fable 5.1 is
+  a priced tier for custom routing tables; nothing routes there by default)
 - apply a validated scaffold only for categories where scaffolding helps
 - keep routing deterministic and local with Ollama embeddings
 
@@ -11,6 +12,7 @@ Primary interface:
 - `claude-router "prompt text"`
 - `ClaudeRouter().route(text)`
 - `ClaudeRouter().build_prompt(text, route_result)`
+- `claude-router --eval [cases.json]` / `claude_router.evaluate.evaluate(router, cases)`
 
 Outputs:
 - category

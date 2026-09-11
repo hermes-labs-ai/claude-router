@@ -63,3 +63,4 @@ packages = ["src/claude_router"]
 "src/claude_router/centroids.json" = "claude_router/centroids.json"
 "src/claude_router/routing_table.json" = "claude_router/routing_table.json"
 "src/claude_router/model_pricing.json" = "claude_router/model_pricing.json"
+"src/claude_router/eval_prompts.json" = "claude_router/eval_prompts.json"

@@ -1,0 +1,101 @@
+{
+  "_note": "Hand-labelled expected categories for `claude-router --eval`. Two prompts per routing-table category. These labels are the maintainers' intended routes, not benchmark ground truth: a miss here means the classifier and the label disagree, and either may be wrong.",
+  "cases": [
+    {
+      "prompt": "Score this AI-generated summary on a scale of 1-10",
+      "category": "eval"
+    },
+    {
+      "prompt": "Evaluate this research paper for methodological rigor",
+      "category": "eval"
+    },
+    {
+      "prompt": "Analyze these search results about prompt injection and synthesize the key findings",
+      "category": "research"
+    },
+    {
+      "prompt": "Research the current state of open-source embedding models and recommend one",
+      "category": "research"
+    },
+    {
+      "prompt": "Write a LinkedIn post about our latest finding",
+      "category": "content"
+    },
+    {
+      "prompt": "Draft a blog post announcing the Q2 results",
+      "category": "content"
+    },
+    {
+      "prompt": "Critique this grant proposal for substantive gaps",
+      "category": "analytical_review"
+    },
+    {
+      "prompt": "Review this technical design document and identify what is missing",
+      "category": "analytical_review"
+    },
+    {
+      "prompt": "Find and compare the three most cited papers on retrieval-augmented generation",
+      "category": "search"
+    },
+    {
+      "prompt": "Search for benchmarks comparing vector databases and summarize the tradeoffs",
+      "category": "search"
+    },
+    {
+      "prompt": "Review this Python function for bugs",
+      "category": "coding_review"
+    },
+    {
+      "prompt": "Review this pull request for correctness",
+      "category": "coding_review"
+    },
+    {
+      "prompt": "Design a schema for storing routing decisions and their outcomes",
+      "category": "coding_design"
+    },
+    {
+      "prompt": "Propose an architecture for a rate limiter service",
+      "category": "coding_design"
+    },
+    {
+      "prompt": "Why does this function raise a KeyError on empty input?",
+      "category": "coding_debug"
+    },
+    {
+      "prompt": "Debug this failing test: the assertion expects 5 but gets 4",
+      "category": "coding_debug"
+    },
+    {
+      "prompt": "Run the deployment script on staging",
+      "category": "operational"
+    },
+    {
+      "prompt": "Rotate the API keys and restart the workers",
+      "category": "operational"
+    },
+    {
+      "prompt": "Check if the server is running and healthy",
+      "category": "status_check"
+    },
+    {
+      "prompt": "Is the nightly build green?",
+      "category": "status_check"
+    },
+    {
+      "prompt": "What do you think about our product strategy",
+      "category": "conversation"
+    },
+    {
+      "prompt": "How was your day?",
+      "category": "conversation"
+    },
+    {
+      "prompt": "Evaluate whether this medication dosage recommendation is safe",
+      "category": "safety_critical"
+    },
+    {
+      "prompt": "Assess whether this financial advice could cause harm to the user",
+      "category": "safety_critical"
+    }
+  ]
+}
