@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "claude-router"
-version = "1.0.0"
+version = "1.1.0"
 description = "Claude prompt router that chooses the right model tier and scaffold using local embeddings."
 readme = "README.md"
 license = {text = "MIT"}
