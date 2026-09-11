@@ -55,6 +55,12 @@ Run costs are what these benchmark batches cost at the list prices in effect on 
 2026-03 run dates. They are historical, not a forecast, and not current pricing — see
 [Pricing](#pricing).
 
+These runs used the Claude 4.x generation (Haiku 4.5, Sonnet 4.6, Opus 4.6). The router
+now returns the current generation for each tier (see [Routing table](#routing-table)),
+so the routing table's evidence is one model generation behind the models it returns. It
+has not been re-validated on Sonnet 5 or Opus 5 yet; `claude-router --eval` (below) checks
+classification, not output quality.
+
 ## Anti-findings
 
 These are the blocker issues. The router handles them automatically:
@@ -79,7 +85,7 @@ print(result["pricing"])         # {'model_id': 'claude-haiku-4-5',
                                  #  'input_usd_per_mtok': 1.0, 'output_usd_per_mtok': 5.0,
                                  #  'input_usd_per_1k': 0.001, 'output_usd_per_1k': 0.005,
                                  #  'basis': 'first_party_uncached_non_batch_global',
-                                 #  'as_of': '2026-09-06', 'source': 'https://platform.claude.com/...'}
+                                 #  'as_of': '2026-09-11', 'source': 'https://platform.claude.com/...'}
 
 # Build prompt with scaffold prepended
 prompt = router.build_prompt("Evaluate this research paper...")
@@ -131,6 +137,35 @@ safety_critical   → Opus    (raw)
 
 Low confidence → Opus (safe default).
 
+Tiers resolve to current-generation model IDs: Haiku → `claude-haiku-4-5`,
+Sonnet → `claude-sonnet-5`, Opus → `claude-opus-5`. A fourth tier, `fable` →
+`claude-fable-5-1`, is priced and accepted in custom routing tables, but no default
+category routes there: it costs 2x Opus and none of the bundled evidence covers it.
+
+## Evaluating the routing table
+
+`claude-router --eval [cases.json]` routes a labelled prompt set and reports how often the
+classifier lands on the expected category and tier, which prompts it misrouted, and what
+the routed tiers cost against sending every prompt to Sonnet:
+
+```bash
+claude-router --eval                      # shipped set: 24 prompts, 2 per category
+claude-router --eval my_cases.json        # {"cases": [{"prompt": ..., "category": ...}]}
+```
+
+```python
+from claude_router.evaluate import evaluate, load_cases
+
+report = evaluate(ClaudeRouter(), load_cases(), tokens_in=1000, tokens_out=1000)
+report["category_accuracy"], report["tier_accuracy"], report["misroutes"]
+report["cost"]["routed_over_baseline"]   # routed list price / all-Sonnet list price
+```
+
+The cost figure is a list-price estimate at the stated tokens per call, not a measurement.
+The shipped labels are the intended routes, not benchmark ground truth: a miss means the
+classifier and the label disagree, and either may be wrong. Routing still needs Ollama;
+only the scoring is offline.
+
 ## Pricing
 
 `route()` returns the routed model's exact list prices, with the date and source they
@@ -139,11 +174,12 @@ were read from, so you can do the arithmetic on your own token volumes:
 | Tier | Model ID | Input $/MTok | Output $/MTok |
 |------|----------|-------------:|--------------:|
 | Haiku | `claude-haiku-4-5` | $1.00 | $5.00 |
-| Sonnet | `claude-sonnet-4-6` | $3.00 | $15.00 |
-| Opus | `claude-opus-4-6` | $5.00 | $25.00 |
+| Sonnet | `claude-sonnet-5` | $2.00 | $10.00 |
+| Opus | `claude-opus-5` | $5.00 | $25.00 |
+| Fable | `claude-fable-5-1` | $10.00 | $50.00 |
 
 Base (uncached, non-batch, global-inference) first-party Claude API prices as of
-**2026-09-06**, from [platform.claude.com/docs/en/about-claude/pricing](https://platform.claude.com/docs/en/about-claude/pricing).
+**2026-09-11**, from [platform.claude.com/docs/en/about-claude/pricing](https://platform.claude.com/docs/en/about-claude/pricing).
 Prompt caching, the Batch API, and `inference_geo` all apply multipliers this table does
 not model. The single maintained copy is [`src/claude_router/model_pricing.json`](src/claude_router/model_pricing.json),
 read by both the packaged router and `router.py`.
@@ -176,6 +212,8 @@ router = ClaudeRouter(
 - Centroids trained on one task distribution — test on your workload
 - The classifier is not perfect — ambiguous prompts fall to low confidence and default to Opus
 - Anti-findings are real: scaffolds on coding/operational make things worse
+- The routing table was validated on the 4.x generation; it now returns Sonnet 5 and
+  Opus 5 without a fresh quality benchmark on them
 - Prices are a dated snapshot, not a live feed — re-check `model_pricing.json` against the
   published source before relying on it for billing
 - Lite mode (Haiku-first routing) planned for v1.1

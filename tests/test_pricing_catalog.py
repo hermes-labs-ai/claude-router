@@ -130,8 +130,8 @@ def test_non_object_models_is_rejected(tmp_path: Path) -> None:
 
 
 def test_unknown_tier_is_rejected(tmp_path: Path) -> None:
-    message = load_bad(tmp_path, lambda d: d["models"].__setitem__("fable", {"model_id": "x"}))
-    assert "unknown tier(s) fable" in message
+    message = load_bad(tmp_path, lambda d: d["models"].__setitem__("mythos", {"model_id": "x"}))
+    assert "unknown tier(s) mythos" in message
 
 
 def test_missing_tier_is_rejected(tmp_path: Path) -> None:
@@ -141,10 +141,10 @@ def test_missing_tier_is_rejected(tmp_path: Path) -> None:
 def test_model_id_mismatch_is_rejected(tmp_path: Path) -> None:
     """The catalog must price the model the router actually returns, not a neighbour."""
     message = load_bad(
-        tmp_path, lambda d: d["models"]["opus"].__setitem__("model_id", "claude-opus-4-5")
+        tmp_path, lambda d: d["models"]["opus"].__setitem__("model_id", "claude-opus-4-8")
     )
-    assert "'claude-opus-4-5'" in message
-    assert "'claude-opus-4-6'" in message
+    assert "'claude-opus-4-8'" in message
+    assert "'claude-opus-5'" in message
 
 
 @pytest.mark.parametrize("bad", ["5.0", None, True, [5.0], {"usd": 5.0}])

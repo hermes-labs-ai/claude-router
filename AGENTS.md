@@ -19,6 +19,7 @@
 ```bash
 pip install -e ".[dev]"
 claude-router "Evaluate this research paper for methodological rigor"
+claude-router --eval
 pytest -q
 ```
 
@@ -28,7 +29,9 @@ pytest -q
 - `pricing` gives the routed model's exact base input and output list prices plus the `as_of` date and `source` URL
 - `cost_per_1k` is deprecated and input-only; never price a call from it alone
 - prices live in one catalog, `src/claude_router/model_pricing.json`, read by both routers — edit prices there only
-- low-confidence inputs fall back to Opus with no scaffold
+- tiers are `haiku`, `sonnet`, `opus`, `fable`; the default routing table uses the first
+  three and low-confidence inputs fall back to Opus with no scaffold
+- `claude-router --eval` scores routing against `src/claude_router/eval_prompts.json`
 
 ## Success means
 

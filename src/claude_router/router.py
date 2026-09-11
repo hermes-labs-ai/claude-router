@@ -36,12 +36,21 @@ SCAFFOLDS_FILE = Path(__file__).parent / "scaffolds.json"
 PRICING_FILE = Path(__file__).parent / "model_pricing.json"
 OLLAMA_URL = os.getenv("OLLAMA_EMBED_URL", "http://localhost:11434/api/embed")
 
-# Public routing contract. The bundled benchmarks include historical model generations,
-# so changing an ID needs fresh validation rather than treating old results as transferable.
+# Public routing contract: tier -> current-generation Claude model ID.
+#
+# The bundled benchmarks (benchmarks/) were run on the Claude 4.x generation
+# (Haiku 4.5, Sonnet 4.6, Opus 4.6). The tier -> model mapping tracks the current
+# family, so the routing table's evidence is one generation behind the models it now
+# returns; re-validate before treating the old results as transferable.
+#
+# `fable` (Claude Fable 5.1) is priced and routable so a custom routing table can
+# target it, but no default category routes there: it costs 2x Opus and none of the
+# bundled evidence covers it. The low-confidence fallback stays on Opus.
 MODEL_IDS: dict[str, str] = {
     "haiku": "claude-haiku-4-5",
-    "sonnet": "claude-sonnet-4-6",
-    "opus": "claude-opus-4-6",
+    "sonnet": "claude-sonnet-5",
+    "opus": "claude-opus-5",
+    "fable": "claude-fable-5-1",
 }
 
 VALID_TIERS = frozenset(MODEL_IDS.keys())
@@ -351,7 +360,12 @@ def _cli():
     """CLI entry point for claude-router."""
     router = ClaudeRouter()
 
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1] == "--eval":
+        from claude_router.evaluate import evaluate, load_cases
+
+        cases = load_cases(sys.argv[2] if len(sys.argv) > 2 else None)
+        print(json.dumps(evaluate(router, cases), indent=2))
+    elif len(sys.argv) > 1:
         query = " ".join(sys.argv[1:])
         result = router.route(query)
         print(json.dumps(result, indent=2))
