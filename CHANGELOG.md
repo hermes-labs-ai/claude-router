@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v1.1.0 — 2026-09-11
+
 - Model catalog moved to the current Claude generation, verified against the published
   pricing page on 2026-09-11: `sonnet` → `claude-sonnet-5` ($2/$10 per MTok, down from
   Sonnet 4.6's $3/$15), `opus` → `claude-opus-5` ($5/$25, unchanged price), `haiku`

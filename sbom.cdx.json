@@ -6,7 +6,7 @@
     "component": {
       "type": "application",
       "name": "claude-router",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "licenses": [{"license": {"id": "MIT"}}]
     }
   },
