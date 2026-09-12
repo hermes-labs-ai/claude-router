@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Changelog: the v1.1.0 pricing-contract note said sonnet `cost_per_1k` was "unchanged at
+  `0.003`", contradicting the same section's `0.002`. It now says which model each value
+  belonged to; 1.1.0 returns `0.002`. No code change.
+
 ## v1.1.0 — 2026-09-11
 
 - Model catalog moved to the current Claude generation, verified against the published
@@ -34,7 +38,9 @@ the list price of the model ID actually returned.
   and unit mismatches rejected rather than silently mis-pricing calls
 - `cost_per_1k` is retained and unchanged in shape but is now derived from the catalog and
   documented as **deprecated, input tokens only** (`cost_per_1k_basis`). Corrected values:
-  haiku `0.0008` → `0.001`, opus `0.015` → `0.005`; sonnet unchanged at `0.003`
+  haiku `0.0008` → `0.001`, opus `0.015` → `0.005`; sonnet stayed at `0.003` for
+  Sonnet 4.6 in this pricing-contract change, then became `0.002` with the Sonnet 5 move
+  above (the value 1.1.0 returns)
 - Removed the README monthly-cost projection and the example's character-count cost
   estimate; the example now prices a call from the token counts the API reports
 - Benchmark results are unchanged; the PF-001 cost table and PF-002's "73% cheaper"
