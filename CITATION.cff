@@ -9,8 +9,8 @@ abstract: >-
   overspend without a repeatable rule for when a cheaper tier plus structure is
   enough.
 type: software
-version: 1.1.0
-date-released: 2026-09-11
+version: 1.1.1
+date-released: 2026-09-12
 authors:
   - family-names: "Bosch Rodriguez"
     given-names: "Rolando"

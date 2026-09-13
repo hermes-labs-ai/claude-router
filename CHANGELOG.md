@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## v1.1.1 — 2026-09-12
+
+Documentation-only patch release, so the PyPI project page carries the corrected README.
+No code, routing, pricing-data or behavior changes from 1.1.0.
+
 - Changelog: the v1.1.0 pricing-contract note said sonnet `cost_per_1k` was "unchanged at
   `0.003`", contradicting the same section's `0.002`. It now says which model each value
   belonged to; 1.1.0 returns `0.002`. No code change.
