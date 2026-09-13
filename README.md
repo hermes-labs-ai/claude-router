@@ -95,8 +95,10 @@ prompt = router.build_prompt("Evaluate this research paper...")
 Or CLI:
 
 ```bash
-python router.py "Write a blog post about Q2 results"
+claude-router "Write a blog post about Q2 results"
 ```
+
+From a source checkout without installing, `python router.py "..."` runs the same router.
 
 ## How it works
 
@@ -216,7 +218,7 @@ router = ClaudeRouter(
   Opus 5 without a fresh quality benchmark on them
 - Prices are a dated snapshot, not a live feed — re-check `model_pricing.json` against the
   published source before relying on it for billing
-- Lite mode (Haiku-first routing) planned for v1.1
+- No Lite mode (Haiku-first routing): it was planned for v1.1 but did not ship in 1.1.0
 
 ## Evidence
 
