@@ -5,6 +5,10 @@
 - Changelog: the v1.1.0 pricing-contract note said sonnet `cost_per_1k` was "unchanged at
   `0.003`", contradicting the same section's `0.002`. It now says which model each value
   belonged to; 1.1.0 returns `0.002`. No code change.
+- README: the CLI example ran `python router.py`, which a pip install does not provide; it
+  now uses the installed `claude-router` command and keeps `router.py` for source checkouts.
+  The Limitations list no longer says Lite mode is planned for v1.1, since 1.1.0 shipped
+  without it. No code change.
 
 ## v1.1.0 — 2026-09-11
 
