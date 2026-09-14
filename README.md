@@ -1,5 +1,7 @@
 # claude-router
 
+[![CI](https://github.com/hermes-labs-ai/claude-router/actions/workflows/ci.yml/badge.svg)](https://github.com/hermes-labs-ai/claude-router/actions/workflows/ci.yml)
+
 claude-router is a local prompt router that picks the right Claude model tier and prepends the right scaffold using local embeddings, before you call the API.
 
 Claude teams overspend on Sonnet or Opus because nobody has a fast, repeatable way to decide when Haiku plus structure is enough. claude-router classifies a prompt locally, chooses the right Claude tier, and prepends the right scaffold when scaffolding actually improves quality.
