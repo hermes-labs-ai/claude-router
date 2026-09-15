@@ -5,8 +5,8 @@ fast_budget_seconds = 8.0
 full_required_local = true
 
 [review]
-provider = "hermes-pr-review"
-argv = ["hermes-pr-review"]
+provider = "coderabbit"
+argv = ["coderabbit", "review", "--agent", "--base", "main"]
 timeout_seconds = 180.0
 
 [[fast]]
