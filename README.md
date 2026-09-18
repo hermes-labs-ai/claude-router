@@ -220,7 +220,9 @@ router = ClaudeRouter(
   Opus 5 without a fresh quality benchmark on them
 - Prices are a dated snapshot, not a live feed — re-check `model_pricing.json` against the
   published source before relying on it for billing
-- No Lite mode (Haiku-first routing): it was planned for v1.1 but did not ship in 1.1.0
+- No Lite mode (Haiku-first routing): still not available in the current release, 1.1.1 —
+  see the [v1.1.1 release notes](https://github.com/hermes-labs-ai/claude-router/releases/tag/v1.1.1)
+  (also in [CHANGELOG.md](CHANGELOG.md))
 
 ## Evidence
 
