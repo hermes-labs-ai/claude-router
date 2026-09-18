@@ -132,7 +132,9 @@ content           → Haiku   + insight-first
 analytical_review → Haiku   + substance-check
 search            → Haiku   + plan-first
 
-coding            → Sonnet  (raw)
+coding_review     → Sonnet  (raw)
+coding_design     → Sonnet  (raw)
+coding_debug      → Sonnet  (raw)
 operational       → Sonnet  (raw)
 status_check      → Haiku   (raw)
 conversation      → Opus    (raw)
