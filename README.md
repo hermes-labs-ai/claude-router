@@ -1,12 +1,16 @@
-# claude-router
+<div align="center">
 
-[![CI](https://github.com/hermes-labs-ai/claude-router/actions/workflows/ci.yml/badge.svg)](https://github.com/hermes-labs-ai/claude-router/actions/workflows/ci.yml)
+<h1>claude-router</h1>
 
 claude-router is a local prompt router that picks the right Claude model tier and prepends the right scaffold using local embeddings, before you call the API.
 
 claude-router is developed by [Hermes Labs](https://hermes-labs.ai).
 
-Hermes Labs studies failure modes in agent and LLM systems, develops open-source tools that treat language as part of the runtime, and works with teams to remediate reliability failures in production.
+Hermes Labs is an agentic infrastructure company building the reliability layer for autonomous systems.
+
+[![CI](https://github.com/hermes-labs-ai/claude-router/actions/workflows/ci.yml/badge.svg)](https://github.com/hermes-labs-ai/claude-router/actions/workflows/ci.yml)
+
+</div>
 
 Claude teams overspend on Sonnet or Opus because nobody has a fast, repeatable way to decide when Haiku plus structure is enough. claude-router classifies a prompt locally, chooses the right Claude tier, and prepends the right scaffold when scaffolding actually improves quality.
 
